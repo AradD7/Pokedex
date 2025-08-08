@@ -27,4 +27,4 @@ go.work.sum
 # log files
 *.log
 
-./Pokedex
+Pokedex
