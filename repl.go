@@ -6,24 +6,23 @@ import (
 	"os"
 	"slices"
 	"strings"
+
+	"github.com/AradD7/Pokedex/internal/pokeapi"
 )
 
 
 type cliCommand struct {
 	name			string
 	description		string
-	callback		func(url *config) error
+	callback		func(cfg *config) error
 }
 
 type config struct {
-	Next		string	`json:"next"`
-	Previous	string	`json:"previous"`
+	pokeapiClient		pokeapi.Clinet
+	nextLocationURL		*string
+	previousLocationURL	*string
 }
 
-var urls = config{
-	Next: "https://pokeapi.co/api/v2/location-area/",
-	Previous: "",
-}
 
 
 func cleanInput(text string) []string {
@@ -34,7 +33,7 @@ func cleanInput(text string) []string {
 	return seperatedText
 }
 
-func startRepl() {
+func startRepl(cfg *config) {
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
 		fmt.Printf("Pokedex > ")
@@ -49,8 +48,10 @@ func startRepl() {
 		command := userInputSlice[0]
 		if c, ok := getCommands()[command]; ok {
 			fmt.Println()
-			c.callback(&urls)
-			fmt.Println()
+			err := c.callback(cfg)
+			if err != nil {
+				fmt.Println(err)
+			}
 		} else {
 			fmt.Println("Unknown Command")
 			}
@@ -73,7 +74,7 @@ func getCommands() map[string]cliCommand {
 		"map": {
 			name: "map",
 			description: "Displays the next 20 location areas",
-			callback: commandMap,
+			callback: commandMapf,
 		},
 		"mapb": {
 			name: "mapb",
