@@ -14,13 +14,14 @@ import (
 type cliCommand struct {
 	name			string
 	description		string
-	callback		func(cfg *config) error
+	callback		func(cfg *config, param ...string) error
 }
 
 type config struct {
 	pokeapiClient		pokeapi.Clinet
 	nextLocationURL		*string
 	previousLocationURL	*string
+	pokeDex 			map[string]pokeapi.PokemonType
 }
 
 
@@ -45,10 +46,11 @@ func startRepl(cfg *config) {
 			continue
 		}
 
-		command := userInputSlice[0]
-		if c, ok := getCommands()[command]; ok {
+		
+		if c, ok := getCommands()[userInputSlice[0]]; ok {
 			fmt.Println()
-			err := c.callback(cfg)
+			err := c.callback(cfg, userInputSlice...)
+			fmt.Println()
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -80,6 +82,16 @@ func getCommands() map[string]cliCommand {
 			name: "mapb",
 			description: "Displays the previous 20 location areas",
 			callback: commandMapb,
+		},
+		"explore": {
+			name: "explore",
+			description: "Displays all the pokemons in a location-area",
+			callback: commandExplore,
+		},
+		"catch": {
+			name: "catch",
+			description: "'catch pokemon_name' Catches the pokemon",
+			callback: commandCatch,
 		},
 	}
 }

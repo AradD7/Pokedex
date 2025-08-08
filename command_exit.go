@@ -6,7 +6,7 @@ import (
 )
 
 
-func commandExit(urls *config) error {
+func commandExit(urls *config, param ...string) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 	return nil
